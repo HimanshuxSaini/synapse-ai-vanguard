@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Brain, BookOpen, GraduationCap, Code, 
   Map, History, Zap, Layout, Send, LogOut, Search, Activity, Target, CheckCircle2,
-  Download, Clock, Bookmark, BookmarkCheck, Pause, Play, RotateCcw, PenLine, 
+  Download, Clock, Bookmark, BookmarkCheck, PenLine, 
   Award, ChevronRight, Menu, X, Terminal, Monitor, Sparkles, Plus, User, FileText, HelpCircle,
   Youtube, Video
 } from 'lucide-react';
@@ -28,11 +28,6 @@ export default function App() {
   const [isZenMode, setIsZenMode] = useState(false);
   const [error, setError] = useState(null);
   
-  const [timerSecs, setTimerSecs] = useState(25 * 60);
-  const [timerRunning, setTimerRunning] = useState(false);
-  const [isTimerEditing, setIsTimerEditing] = useState(false);
-  const [timerInput, setTimerInput] = useState(25);
-  const timerRef = useRef(null);
 
   const [masteredTopics, setMasteredTopics] = useState(() => {
     try {
@@ -80,20 +75,6 @@ export default function App() {
     }
   }, []);
 
-  useEffect(() => {
-    if (timerRunning) {
-      timerRef.current = setInterval(() => {
-        setTimerSecs(s => { 
-          if (s <= 1) { 
-            setTimerRunning(false); 
-            return 0; 
-          } 
-          return s - 1; 
-        });
-      }, 1000);
-    } else clearInterval(timerRef.current);
-    return () => clearInterval(timerRef.current);
-  }, [timerRunning]);
 
   const fetchHistory = async () => {
     try {
@@ -191,7 +172,6 @@ export default function App() {
     }
   };
 
-  const fmtTime = (s) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
 
   const getSuggestions = () => {
     const fallbacks = ['Neural Networks', 'Quantum Computing', 'Systems Design'];
@@ -462,16 +442,6 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-2 md:gap-4">
-             <div
-               className="flex items-center gap-2 md:gap-4 px-3 md:px-5 py-2 rounded-xl md:rounded-2xl border"
-               style={{ background:'rgba(255,255,255,0.04)', borderColor:'rgba(255,255,255,0.08)', backdropFilter:'blur(12px)' }}
-             >
-               <span className="font-mono text-xs md:text-sm font-black text-white w-10 md:w-14 text-center tracking-widest">{fmtTime(timerSecs)}</span>
-               <div className="flex items-center gap-1 md:gap-2 border-l border-white/10 pl-2 md:pl-4">
-                  <button onClick={() => setTimerRunning(!timerRunning)} className="p-1 hover:bg-white/5 rounded-lg transition-all">{timerRunning ? <Pause className="w-3 md:w-3.5 h-3 md:h-3.5" /> : <Play className="w-3 md:w-3.5 h-3 md:h-3.5" />}</button>
-                  <button onClick={() => {setTimerSecs(timerInput * 60); setTimerRunning(false);}} className="p-1 hover:bg-white/5 text-white/20 rounded-lg transition-all"><RotateCcw className="w-3 md:w-3.5 h-3 md:h-3.5" /></button>
-               </div>
-             </div>
              
              <button 
                onClick={() => setIsZenMode(!isZenMode)}
