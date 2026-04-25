@@ -1,7 +1,19 @@
 import axios from 'axios';
 
+const getBaseURL = () => {
+  const url = import.meta.env.VITE_API_BASE_URL;
+  if (url) return url;
+  
+  // If in production and no URL provided, we might be in a broken state
+  if (import.meta.env.PROD) {
+    console.warn('⚠️ Synapse AI: VITE_API_BASE_URL is not defined. Defaulting to localhost which may fail in production.');
+  }
+  
+  return 'http://localhost:5000/api';
+};
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api',
+  baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json'
   }

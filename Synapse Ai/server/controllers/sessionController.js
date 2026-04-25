@@ -63,15 +63,26 @@ exports.generateCurriculum = async (req, res) => {
     ]);
 
     let content = response.content.trim();
+    console.log('--- NEURAL DATA RECEIVED ---');
     
     // Robust extraction fallback just in case, though response_format guarantees JSON
     const jsonMatch = content.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('Neural matrix returned no valid JSON data.');
+    if (!jsonMatch) {
+      console.error('ERROR: No valid JSON found in LLM response');
+      throw new Error('Neural matrix returned no valid JSON data.');
+    }
     
-    const data = JSON.parse(jsonMatch[0]);
+    let data;
+    try {
+      data = JSON.parse(jsonMatch[0]);
+    } catch (parseErr) {
+      console.error('ERROR: JSON Parsing failed:', parseErr.message);
+      throw new Error('Failed to parse neural data patterns.');
+    }
     
     // FETCH REAL YOUTUBE VIDEOS (to avoid LLM hallucinated dead links)
     try {
+      console.log(`--- FETCHING VANGUARD LECTURES FOR: ${topic} ---`);
       const searchResult = await ytSearch(`${topic} tutorial ${level} ${language} programming course`);
       if (searchResult && searchResult.videos.length > 0) {
         data.videos = searchResult.videos.slice(0, 4).map(v => ({
@@ -79,9 +90,10 @@ exports.generateCurriculum = async (req, res) => {
           channel: v.author.name,
           url: v.url
         }));
+        console.log(`--- SYNCED ${data.videos.length} LECTURES ---`);
       }
     } catch (err) {
-      console.log('YouTube Search fallback skipped:', err);
+      console.log('YouTube Search fallback skipped:', err.message);
     }
     
     const session = new Session({
@@ -91,11 +103,15 @@ exports.generateCurriculum = async (req, res) => {
       language
     });
     await session.save();
+    console.log(`--- SESSION PERSISTED: ${session._id} ---`);
 
     res.json(session);
   } catch (err) {
-    console.error('Generation Error:', err);
-    res.status(500).json({ error: 'Neural link failed during generation. Data format might be unstable.' });
+    console.error('CRITICAL GENERATION ERROR:', err.message);
+    res.status(500).json({ 
+      error: `Generation failed: ${err.message}`,
+      details: 'Ensure the Groq API key is valid and you have a stable connection.'
+    });
   }
 };
 

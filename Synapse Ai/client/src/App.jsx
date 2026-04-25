@@ -96,7 +96,10 @@ export default function App() {
       setHistory(prev => [res.data, ...prev]);
       setActiveTab('Roadmap');
       setTopic('');
-    } catch (err) { setError('Something went wrong. Please try again.'); }
+    } catch (err) { 
+      const msg = err.response?.data?.error || err.message || 'Something went wrong. Please try again.';
+      setError(msg); 
+    }
     setLoading(false);
   };
 
@@ -106,7 +109,7 @@ export default function App() {
       await sessionService.clear();
       setHistory([]);
       setData(null);
-    } catch { setError('Purge unsuccessful. Neural link unstable.'); }
+    } catch (err) { setError(err.response?.data?.error || 'Purge unsuccessful. Neural link unstable.'); }
   };
 
   const handleDeleteSession = async (id, e) => {
@@ -116,7 +119,7 @@ export default function App() {
       await sessionService.deleteOne(id);
       setHistory(prev => prev.filter(s => s._id !== id));
       if (data?._id === id) setData(null);
-    } catch { setError('Session deletion failed.'); }
+    } catch (err) { setError(err.response?.data?.error || 'Session deletion failed.'); }
   };
 
   const handleLogout = () => {
@@ -131,7 +134,7 @@ export default function App() {
       const res = await api.post('/session/quiz', { topic: data.topic, level: data.level });
       setQuizData(res.data.quiz);
       setActiveTab('Quiz');
-    } catch { setError('Quiz sync offline'); }
+    } catch (err) { setError(err.response?.data?.error || 'Quiz sync offline'); }
     setLoading(false);
   };
 
@@ -142,7 +145,7 @@ export default function App() {
       const res = await api.post(`/session/${data._id}/videos`);
       setData(res.data);
       setHistory(prev => prev.map(s => s._id === res.data._id ? res.data : s));
-    } catch { setError('Lectures sync failed.'); }
+    } catch (err) { setError(err.response?.data?.error || 'Lectures sync failed.'); }
     setLoading(false);
   };
 
