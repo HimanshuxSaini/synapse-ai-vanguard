@@ -2,13 +2,17 @@ import axios from 'axios';
 
 const getBaseURL = () => {
   const url = import.meta.env.VITE_API_BASE_URL;
-  if (url) return url;
   
-  // If in production and no URL provided, we might be in a broken state
-  if (import.meta.env.PROD) {
-    console.warn('⚠️ Synapse AI: VITE_API_BASE_URL is not defined. Defaulting to localhost which may fail in production.');
+  if (url) {
+    console.log('🚀 Synapse AI: Connecting to Neural Backend at:', url);
+    return url;
   }
-  
+
+  // For production builds, we need the URL to be baked in
+  if (import.meta.env.PROD) {
+    console.error('❌ Synapse AI Error: VITE_API_BASE_URL is not defined! API calls will fail on the live site.');
+  }
+
   return 'http://localhost:5000/api';
 };
 

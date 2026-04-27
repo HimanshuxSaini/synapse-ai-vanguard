@@ -6,12 +6,11 @@ import {
   Map, History, Zap, Layout, Send, LogOut, Search, Activity, Target, CheckCircle2,
   Download, Clock, Bookmark, BookmarkCheck, PenLine, 
   Award, ChevronRight, Menu, X, Terminal, Monitor, Sparkles, Plus, User, FileText, HelpCircle,
-  Youtube, Video
+  Youtube, Video, Play
 } from 'lucide-react';
 import LoginPage from './pages/LoginPage';
 import api, { sessionService } from './services/api';
 import NeuralBackground from './components/NeuralBackground';
-import ErrorBoundary from './components/ErrorBoundary';
 
 // Styles migrated to index.css
 
@@ -195,7 +194,6 @@ export default function App() {
       {!user ? (
         <LoginPage onLogin={(ud) => { setUser(ud); fetchHistory(); }} />
       ) : (
-        <ErrorBoundary>
         <div
           className="flex h-screen text-white font-sans selection:bg-[#00F5FF]/30 overflow-hidden relative"
         >
@@ -741,7 +739,6 @@ export default function App() {
         </div>
       </main>
     </div>
-    </ErrorBoundary>
   )}
 </>
 );
