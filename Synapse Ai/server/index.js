@@ -56,6 +56,10 @@ app.use(express.json({ limit: '10kb' }));
 app.use('/api/auth', authRoutes);
 app.use('/api/session', sessionRoutes);
 
+// Health Check
+app.get('/', (req, res) => res.json({ status: 'Synapse AI Neural Link Active', timestamp: new Date() }));
+app.get('/api', (req, res) => res.json({ message: 'Vanguard API Gateway Operational' }));
+
 // Global Error Handling
 app.use((err, req, res, next) => {
   console.error('SYSTEM ERROR LOG:', err.message);
